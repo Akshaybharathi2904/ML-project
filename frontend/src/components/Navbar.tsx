@@ -1,9 +1,9 @@
 import React from 'react';
-import { Compass, Sparkles, MapPin, Sliders, BarChart3, Bot, Award, Layers, User } from 'lucide-react';
+import { Compass, Sparkles, MapPin, Sliders, Bot, User } from 'lucide-react';
 
 interface NavbarProps {
-  currentView: 'landing' | 'explorer' | 'customize' | 'dashboard' | 'evaluation';
-  onNavigate: (view: 'landing' | 'explorer' | 'customize' | 'dashboard' | 'evaluation') => void;
+  currentView: 'landing' | 'explorer' | 'customize' | 'dashboard';
+  onNavigate: (view: 'landing' | 'explorer' | 'customize' | 'dashboard') => void;
   onOpenCopilot: () => void;
   onOpenProfile?: () => void;
   hasItinerary?: boolean;
@@ -75,17 +75,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="hidden sm:inline">Planner</span>
           </button>
 
-          <button
-            onClick={() => onNavigate('evaluation')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-              currentView === 'evaluation' 
-                ? 'bg-teal-500 text-slate-950 font-bold shadow-md' 
-                : 'text-slate-300 hover:text-white hover:bg-slate-800'
-            }`}
-          >
-            <Award className="w-3.5 h-3.5" />
-            <span>Evaluation</span>
-          </button>
         </nav>
 
         {/* Right CTA */}

@@ -8,15 +8,13 @@ interface LandingPageProps {
   onSelectDestination?: (dest: Destination) => void;
   onStartPlanning: () => void;
   onExploreDestinations?: () => void;
-  onViewEvaluation?: () => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({
   destinations: propDestinations,
   onSelectDestination,
   onStartPlanning,
-  onExploreDestinations,
-  onViewEvaluation
+  onExploreDestinations
 }) => {
   const [destinations, setDestinations] = useState<Destination[]>(propDestinations || []);
   const [searchQuery, setSearchQuery] = useState('');

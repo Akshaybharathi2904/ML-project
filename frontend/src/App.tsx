@@ -4,7 +4,6 @@ import { LandingPage } from './components/LandingPage';
 import { DestinationExplorer } from './components/DestinationExplorer';
 import { TripCustomizer } from './components/TripCustomizer';
 import { ResultsDashboard } from './components/ResultsDashboard';
-import { EvaluationPage } from './components/EvaluationPage';
 import { TripCopilotModal } from './components/TripCopilotModal';
 import { UserProfileModal } from './components/UserProfileModal';
 import { Footer } from './components/Footer';
@@ -323,8 +322,8 @@ const DEFAULT_SAMPLE_ITINERARY: ItineraryResponse = {
 
 export function App() {
   const urlParamView = new URLSearchParams(window.location.search).get('view') as any;
-  const [currentView, setCurrentView] = useState<'landing' | 'explorer' | 'customize' | 'dashboard' | 'evaluation'>(
-    urlParamView && ['landing', 'explorer', 'customize', 'dashboard', 'evaluation'].includes(urlParamView)
+  const [currentView, setCurrentView] = useState<'landing' | 'explorer' | 'customize' | 'dashboard'>(
+    urlParamView && ['landing', 'explorer', 'customize', 'dashboard'].includes(urlParamView)
       ? urlParamView
       : 'landing'
   );
@@ -365,7 +364,6 @@ export function App() {
           <LandingPage
             onStartPlanning={handleStartPlanning}
             onExploreDestinations={() => setCurrentView('explorer')}
-            onViewEvaluation={() => setCurrentView('evaluation')}
           />
         )}
 
@@ -392,9 +390,6 @@ export function App() {
           />
         )}
 
-        {currentView === 'evaluation' && (
-          <EvaluationPage />
-        )}
       </main>
 
       {/* Persistent Floating AI Copilot Trigger */}
