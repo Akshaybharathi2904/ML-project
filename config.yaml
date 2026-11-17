@@ -1,0 +1,79 @@
+region:
+  name: "South India"
+  states: ["Tamil Nadu", "Kerala", "Karnataka"]
+  default_start_city: "Bengaluru"
+  cities:
+    - "Bengaluru"
+    - "Mysuru"
+    - "Coorg"
+    - "Hampi"
+    - "Gokarna"
+    - "Chennai"
+    - "Madurai"
+    - "Coimbatore"
+    - "Ooty"
+    - "Kodaikanal"
+    - "Kochi"
+    - "Munnar"
+    - "Alleppey"
+    - "Wayanad"
+    - "Thiruvananthapuram"
+
+data:
+  places_csv: "data/processed/places.csv"
+  users_csv: "data/processed/users.csv"
+  ratings_csv: "data/processed/ratings.csv"
+  distance_matrix_csv: "data/processed/distance_matrix.csv"
+  travel_time_matrix_csv: "data/processed/travel_time_matrix.csv"
+  num_places: 300
+  num_users: 1000
+  num_ratings: 30000
+  cold_start_ratio: 0.15
+  random_seed: 42
+
+travel_model:
+  avg_speed_kmh: 42.0
+  traffic_factor: 1.15
+  min_transfer_time_min: 15.0
+
+pace_limits:
+  relaxed:
+    max_places_per_day: 3
+    daily_time_budget_min: 480 # 8 hours
+  moderate:
+    max_places_per_day: 5
+    daily_time_budget_min: 600 # 10 hours
+  packed:
+    max_places_per_day: 7
+    daily_time_budget_min: 720 # 12 hours
+
+recommender:
+  svd_components: 20
+  lgb_params:
+    objective: "regression"
+    metric: "rmse"
+    boosting_type: "gbdt"
+    n_estimators: 120
+    learning_rate: 0.05
+    num_leaves: 31
+    random_state: 42
+    verbose: -1
+
+optimizer:
+  population_size: 50
+  generations: 60
+  crossover_prob: 0.9
+  mutation_prob: 0.2
+  seed: 42
+  objectives:
+    - name: "Personalization Score"
+      direction: "maximize"
+    - name: "Total Cost"
+      direction: "minimize"
+    - name: "Travel Time"
+      direction: "minimize"
+    - name: "Category Diversity"
+      direction: "maximize"
+    - name: "Crowd Level"
+      direction: "minimize"
+

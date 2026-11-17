@@ -1,0 +1,8 @@
+| Method                            | Hypervolume   | Spacing          | Pareto Solutions   | Runtime (s)   | Violation Rate   |
+|:----------------------------------|:--------------|:-----------------|:-------------------|:--------------|:-----------------|
+| Random Itineraries (N=100)        | 0.398         | 71.313           | 65                 | 0.04          | 0.0%             |
+| Greedy (by Personalization Score) | 1.611         | -                | 1                  | 0.000         | 0.0%             |
+| Greedy (Score / Cost Ratio)       | 1.611         | -                | 1                  | 0.000         | 0.0%             |
+| Weighted-Sum Single-Obj GA        | 1.611         | -                | 1                  | 0.86          | 0.0%             |
+| NSGA-III (10 seeds)               | 0.264 ± 0.093 | 150.197 ± 69.844 | 7.800 ± 1.600      | 3.009 ± 1.876 | 0.000 ± 0.000    |
+| NSGA-II (10 seeds, Main)          | 0.538 ± 0.107 | 87.260 ± 11.990  | 31.700 ± 1.005     | 1.691 ± 0.291 | 0.000 ± 0.000    |

@@ -1,0 +1,44 @@
+{
+  "model_version": "v2.0.0-synthetic-trained",
+  "data_source": "Model trained on synthetic data",
+  "training_samples": 15000,
+  "crowd_regressor": {
+    "algorithm": "LightGBM Regressor",
+    "MAE": 3.2601,
+    "RMSE": 4.1082,
+    "R2": 0.9496
+  },
+  "cost_regressor": {
+    "algorithm": "GradientBoosting Regressor",
+    "MAE": 154.4042,
+    "RMSE": 264.031,
+    "R2": 0.7837
+  },
+  "disruption_classifier": {
+    "algorithm": "LightGBM Classifier",
+    "accuracy": 0.994,
+    "macro_f1": 0.9937,
+    "confusion_matrix": [
+      [
+        1620,
+        3,
+        0
+      ],
+      [
+        15,
+        665,
+        0
+      ],
+      [
+        0,
+        0,
+        697
+      ]
+    ],
+    "classes": [
+      "Low",
+      "Medium",
+      "High"
+    ]
+  }
+}
