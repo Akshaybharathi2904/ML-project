@@ -1,14 +1,19 @@
-import { Destination, Place, WeatherForecast, ItineraryResponse, EvaluationData } from '../types';
+import { Destination, Place, WeatherForecast, ItineraryResponse, EvaluationData, StateItem, CategoryItem } from '../types';
 
 const API_BASE = 'http://localhost:8000/api';
 
 export const api = {
-  async getDestinations(query: string = ''): Promise<Destination[]> {
+  async getDestinations(query: string = '', state: string = '', category: string = '', sort_by: string = 'name_asc'): Promise<Destination[]> {
     try {
-      const res = await fetch(`${API_BASE}/destinations/search?q=${encodeURIComponent(query)}`);
+      const params = new URLSearchParams({ q: query, state, category, sort_by, limit: '500' });
+      const res = await fetch(`${API_BASE}/destinations/search?${params.toString()}`);
       if (res.ok) {
         const json = await res.json();
-        return json.data || [];
+        // New search endpoint returns { destinations, total, ... }
+        const data = json.data;
+        if (data && Array.isArray(data.destinations)) return data.destinations;
+        if (Array.isArray(data)) return data;
+        return [];
       }
     } catch (e) {
       console.warn('API error, falling back to mock destination data:', e);
@@ -88,6 +93,58 @@ export const api = {
         image_url: 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?w=800'
       }
     ];
+  },
+
+  async getDestinationStates(): Promise<StateItem[]> {
+    try {
+      const res = await fetch(`${API_BASE}/destinations/states`);
+      if (res.ok) {
+        const json = await res.json();
+        return json.data || [];
+      }
+    } catch (e) {
+      console.warn('Failed to load destination states:', e);
+    }
+    return [];
+  },
+
+  async getDestinationCategories(): Promise<CategoryItem[]> {
+    try {
+      const res = await fetch(`${API_BASE}/destinations/categories`);
+      if (res.ok) {
+        const json = await res.json();
+        return json.data || [];
+      }
+    } catch (e) {
+      console.warn('Failed to load destination categories:', e);
+    }
+    return [];
+  },
+
+  async getDestinationById(id: string): Promise<Destination | null> {
+    try {
+      const res = await fetch(`${API_BASE}/destinations/${encodeURIComponent(id)}`);
+      if (res.ok) {
+        const json = await res.json();
+        return json.data || null;
+      }
+    } catch (e) {
+      console.warn('Failed to load destination details:', e);
+    }
+    return null;
+  },
+
+  async getPopularDestinations(limit: number = 20): Promise<Destination[]> {
+    try {
+      const res = await fetch(`${API_BASE}/destinations/popular?limit=${limit}`);
+      if (res.ok) {
+        const json = await res.json();
+        return json.data || [];
+      }
+    } catch (e) {
+      console.warn('Failed to load popular destinations:', e);
+    }
+    return [];
   },
 
   async generateItinerary(payload: any): Promise<ItineraryResponse> {

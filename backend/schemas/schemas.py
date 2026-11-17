@@ -10,6 +10,7 @@ class StandardResponse(BaseModel):
 
 
 class DestinationItem(BaseModel):
+    # Core fields (backward compatible)
     id: str
     name: str
     state: str
@@ -20,6 +21,33 @@ class DestinationItem(BaseModel):
     recommended_duration_days: int
     overview: str
     image_url: Optional[str] = None
+    # Extended fields for 314-destination dataset
+    destination_id: Optional[str] = None
+    destination_name: Optional[str] = None
+    state_or_union_territory: Optional[str] = None
+    is_union_territory: Optional[bool] = None
+    destination_category: Optional[str] = None
+    popular_attractions: Optional[List[str]] = None
+    nearby_places: Optional[List[str]] = None
+    recommended_activities: Optional[List[str]] = None
+    best_visiting_season: Optional[str] = None
+    image_source: Optional[str] = None
+    photographer_name: Optional[str] = None
+    photographer_profile_url: Optional[str] = None
+    image_license: Optional[str] = None
+    image_source_page: Optional[str] = None
+    data_source: Optional[str] = None
+
+
+class StateItem(BaseModel):
+    state: str
+    is_union_territory: bool = False
+    destination_count: int
+
+
+class CategoryItem(BaseModel):
+    category: str
+    destination_count: int
 
 
 class PlaceItem(BaseModel):

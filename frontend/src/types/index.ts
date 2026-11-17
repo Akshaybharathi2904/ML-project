@@ -10,6 +10,33 @@ export interface Destination {
   overview: string;
   image_url?: string;
   data_source?: string;
+  // Extended fields from 314-destination dataset
+  destination_id?: string;
+  destination_name?: string;
+  state_or_union_territory?: string;
+  is_union_territory?: boolean;
+  destination_category?: string;
+  popular_attractions?: string[];
+  nearby_places?: string[];
+  recommended_activities?: string[];
+  best_visiting_season?: string;
+  image_source?: string;
+  photographer_name?: string;
+  photographer_profile_url?: string;
+  image_license?: string;
+  image_source_page?: string;
+  description?: string;
+}
+
+export interface StateItem {
+  state: string;
+  is_union_territory: boolean;
+  destination_count: number;
+}
+
+export interface CategoryItem {
+  category: string;
+  destination_count: number;
 }
 
 export interface Place {

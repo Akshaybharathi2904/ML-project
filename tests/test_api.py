@@ -18,7 +18,10 @@ def test_destinations_search():
     assert response.status_code == 200
     res = response.json()
     assert res["success"] is True
-    dest_names = [d["name"] for d in res["data"]]
+    # New API returns { destinations: [...], total: N, ... }
+    data = res["data"]
+    destinations = data["destinations"] if isinstance(data, dict) else data
+    dest_names = [d["name"] for d in destinations]
     assert "Udaipur" in dest_names
 
 

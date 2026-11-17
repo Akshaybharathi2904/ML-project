@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Compass, Calendar, IndianRupee, Users, Sliders, Star, Sparkles, CheckCircle2, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Compass, Calendar, IndianRupee, Users, Sliders, Star, Sparkles, CheckCircle2, ArrowLeft, Search, ChevronDown, X, MapPin } from 'lucide-react';
 import { Destination, ItineraryResponse } from '../types';
 import { api } from '../services/api';
 
@@ -50,6 +50,11 @@ export const TripCustomizer: React.FC<TripCustomizerProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Searchable destination dropdown state
+  const [destSearch, setDestSearch] = useState('');
+  const [showDestDropdown, setShowDestDropdown] = useState(false);
+  const destDropdownRef = useRef<HTMLDivElement>(null);
+
   // Interest Sliders (0.0 to 1.0)
   const [interests, setInterests] = useState<Record<string, number>>({
     heritage: 0.8,
@@ -82,6 +87,17 @@ export const TripCustomizer: React.FC<TripCustomizerProps> = ({
       setDestination(name);
     }
   }, [initialDestination]);
+
+  // Close destination dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (destDropdownRef.current && !destDropdownRef.current.contains(e.target as Node)) {
+        setShowDestDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const PROGRESS_MESSAGES = [
     "Understanding your travel request...",
@@ -173,29 +189,89 @@ export const TripCustomizer: React.FC<TripCustomizerProps> = ({
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Main Parameters */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Destination */}
+            {/* Destination – Searchable Dropdown */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Destination</label>
-              <select
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-teal-500"
-              >
-                {destinations.length > 0 ? (
-                  destinations.map(d => (
-                    <option key={d.id} value={d.name}>{d.name} ({d.state})</option>
-                  ))
-                ) : (
-                  <>
-                    <option value="Udaipur">Udaipur (Rajasthan)</option>
-                    <option value="Jaipur">Jaipur (Rajasthan)</option>
-                    <option value="Ooty">Ooty (Tamil Nadu)</option>
-                    <option value="Munnar">Munnar (Kerala)</option>
-                    <option value="Goa">Goa (Goa)</option>
-                    <option value="Varanasi">Varanasi (Uttar Pradesh)</option>
-                  </>
+              <div className="relative" ref={destDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setShowDestDropdown(v => !v)}
+                  className="w-full flex items-center justify-between bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-teal-500 hover:border-slate-700 transition"
+                >
+                  <span className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-teal-400 flex-shrink-0" />
+                    {destination || 'Select destination...'}
+                  </span>
+                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${showDestDropdown ? 'rotate-180' : ''}`} />
+                </button>
+                {showDestDropdown && (
+                  <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl">
+                    {/* Search input */}
+                    <div className="p-2 border-b border-slate-800">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                        <input
+                          type="text"
+                          value={destSearch}
+                          onChange={e => setDestSearch(e.target.value)}
+                          placeholder="Search destinations or states..."
+                          className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-8 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                          autoFocus
+                        />
+                        {destSearch && (
+                          <button onClick={() => setDestSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white">
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    {/* Options */}
+                    <div className="max-h-60 overflow-y-auto">
+                      {(() => {
+                        const q = destSearch.toLowerCase();
+                        const filtered = destinations.filter(d =>
+                          !q ||
+                          d.name.toLowerCase().includes(q) ||
+                          d.state.toLowerCase().includes(q)
+                        );
+                        // Group by state
+                        const grouped: Record<string, Destination[]> = {};
+                        filtered.forEach(d => {
+                          const s = d.state;
+                          if (!grouped[s]) grouped[s] = [];
+                          grouped[s].push(d);
+                        });
+                        const sortedStates = Object.keys(grouped).sort();
+                        if (filtered.length === 0) {
+                          return <p className="text-center text-slate-500 text-xs py-6">No destinations found.</p>;
+                        }
+                        return sortedStates.map(state => (
+                          <div key={state}>
+                            <div className="sticky top-0 bg-slate-900/95 px-4 py-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800/50">
+                              {state}
+                            </div>
+                            {grouped[state].map(d => (
+                              <button
+                                key={d.id || d.name}
+                                type="button"
+                                onClick={() => {
+                                  setDestination(d.name);
+                                  setShowDestDropdown(false);
+                                  setDestSearch('');
+                                }}
+                                className={`w-full text-left px-4 py-2.5 text-sm flex items-center justify-between hover:bg-slate-800 transition ${destination === d.name ? 'text-teal-400 bg-teal-500/5' : 'text-slate-300'}`}
+                              >
+                                <span>{d.name}</span>
+                                {destination === d.name && <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />}
+                              </button>
+                            ))}
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                  </div>
                 )}
-              </select>
+              </div>
             </div>
 
             {/* Start Date */}

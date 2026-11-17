@@ -1,6 +1,6 @@
 import uuid
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, HTTPException, Depends, Body
 from pydantic import BaseModel, Field
@@ -81,7 +81,7 @@ def login_or_create_user(req: UserAuthRequest, db: Session = Depends(get_db)):
             "budget_level": user.budget_level,
             "pace_preference": user.pace_preference,
             "preferences": user.preferences or {},
-            "auth_token": f"TM_AUTH_{user.id}_{int(datetime.utcnow().timestamp())}"
+            "auth_token": f"TM_AUTH_{user.id}_{int(datetime.now(timezone.utc).timestamp())}"
         },
         data_source="TRAVELMATE Authentication Provider"
     )
@@ -172,7 +172,7 @@ def submit_place_rating(req: PlaceRatingRequest, db: Session = Depends(get_db)):
         user_id=req.user_id,
         place_id=req.place_id,
         rating=req.rating,
-        timestamp=datetime.utcnow()
+        timestamp=datetime.now(timezone.utc)
     )
     db.add(rating)
     db.commit()
@@ -185,7 +185,7 @@ def submit_place_rating(req: PlaceRatingRequest, db: Session = Depends(get_db)):
             "place_id": req.place_id,
             "rating": req.rating,
             "feedback": req.feedback,
-            "recorded_at": datetime.utcnow().isoformat()
+            "recorded_at": datetime.now(timezone.utc).isoformat()
         },
         data_source="Collaborative Filtering User Feedback Engine"
     )
